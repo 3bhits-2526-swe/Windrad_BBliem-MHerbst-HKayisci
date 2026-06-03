@@ -23,7 +23,7 @@ public class WindradController : MonoBehaviour
     // Diese Funktion dem Button zuweisen
     public void ToggleTurbine()
     {
-    Debug.Log("Turbine eingeschaltet");
-    isRunning = !isRunning;
+        Debug.Log("Turbine eingeschaltet");
+        isRunning = !isRunning;
     }
 }
