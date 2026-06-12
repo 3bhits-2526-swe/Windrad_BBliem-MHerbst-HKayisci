@@ -11,6 +11,7 @@ public class WindSimulationController : MonoBehaviour
 
     [Header("Rotation")]
     [SerializeField] private float maxRotorDegreesPerSecond = 720f;
+    [SerializeField] private Vector3 rotorRotationAxis = Vector3.forward;
 
     private readonly List<Transform> rotors = new();
     private readonly List<Slider> windSliders = new();
@@ -68,17 +69,14 @@ public class WindSimulationController : MonoBehaviour
             RefreshWindSliders();
         }
 
+        UpdateWindFromSlider();
+
         if (rotors.Count == 0)
         {
             RefreshRotors();
         }
 
         RotateWindmills();
-    }
-
-    public void SetWindSpeed(float windSpeed)
-    {
-        CurrentWindSpeed = Mathf.Clamp(windSpeed, 0f, maxWindSpeed);
     }
 
     private void RefreshWindSliders()
@@ -100,7 +98,7 @@ public class WindSimulationController : MonoBehaviour
 
         if (windSliders.Count > 0)
         {
-            HandleWindSliderChanged(windSliders[0].value);
+            UpdateWindFromSlider();
         }
     }
 
@@ -116,6 +114,14 @@ public class WindSimulationController : MonoBehaviour
         SetWindSpeed(normalizedValue * maxWindSpeed);
     }
 
+    private void UpdateWindFromSlider()
+    {
+        if (windSliders.Count > 0 && windSliders[0] != null)
+        {
+            HandleWindSliderChanged(windSliders[0].value);
+        }
+    }
+
     private void RefreshRotors()
     {
         rotors.Clear();
@@ -123,25 +129,57 @@ public class WindSimulationController : MonoBehaviour
         Transform[] allTransforms = FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         foreach (Transform candidate in allTransforms)
         {
-            if (candidate.name == "RotorHub" || candidate.name == "RotorUnit")
+            if (candidate.name != "RotorHub" && candidate.name != "RotorUnit")
             {
-                rotors.Add(candidate);
+                continue;
             }
+
+            if (HasSelectedRotorParent(candidate))
+            {
+                continue;
+            }
+
+            rotors.Add(candidate);
         }
+    }
+
+    private static bool HasSelectedRotorParent(Transform candidate)
+    {
+        Transform parent = candidate.parent;
+        while (parent != null)
+        {
+            if (parent.name == "RotorHub" || parent.name == "RotorUnit")
+            {
+                return true;
+            }
+
+            parent = parent.parent;
+        }
+
+        return false;
     }
 
     private void RotateWindmills()
     {
         float normalizedWind = Mathf.InverseLerp(0f, maxWindSpeed, CurrentWindSpeed);
-        float degreesThisFrame = normalizedWind * maxRotorDegreesPerSecond * Time.deltaTime;
+        if (normalizedWind <= 0.001f)
+        {
+            return;
+        }
 
+        float degreesThisFrame = normalizedWind * maxRotorDegreesPerSecond * Time.deltaTime;
         foreach (Transform rotor in rotors)
         {
             if (rotor != null)
             {
-                rotor.Rotate(0f, degreesThisFrame, 0f, Space.Self);
+                rotor.Rotate(rotorRotationAxis.normalized, degreesThisFrame, Space.Self);
             }
         }
+    }
+
+    public void SetWindSpeed(float windSpeed)
+    {
+        CurrentWindSpeed = Mathf.Clamp(windSpeed, 0f, maxWindSpeed);
     }
 
 }
