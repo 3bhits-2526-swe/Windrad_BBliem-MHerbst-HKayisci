@@ -9,9 +9,7 @@ public class WindradDashboard : MonoBehaviour
     private const float AirDensity = 1.225f;
 
     [Header("Wind Settings")]
-    [SerializeField] private float baseWindSpeed = 8f;
-    [SerializeField] private float windVariation = 2.5f;
-    [SerializeField] private float windVariationSpeed = 0.35f;
+    [SerializeField] private float fallbackWindSpeed = 8f;
 
     [Header("Calculation Settings")]
     [SerializeField] private float rotorRadiusMeters = 3f;
@@ -73,7 +71,8 @@ public class WindradDashboard : MonoBehaviour
             RefreshTurbines();
         }
 
-        CurrentWindSpeed = baseWindSpeed + Mathf.Sin(Time.time * windVariationSpeed) * windVariation;
+        WindSimulationController windController = WindSimulationController.Instance;
+        CurrentWindSpeed = windController != null ? windController.CurrentWindSpeed : fallbackWindSpeed;
         UpdateMetrics();
         UpdateHistory();
     }
