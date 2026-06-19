@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class WindradDashboard : MonoBehaviour
 {
     private const float AirDensity = 1.225f;
+    private const float StoppedWindThreshold = 0.001f;
 
     [Header("Wind Settings")]
     [SerializeField] private float fallbackWindSpeed = 8f;
@@ -276,7 +277,7 @@ public class WindradDashboard : MonoBehaviour
         foreach (TurbineDisplay turbine in turbines)
         {
             float sliderEfficiency = GetSliderEfficiency(turbine.Slider);
-            float turbineEfficiency = sliderEfficiency * maxTurbineEfficiency;
+            float turbineEfficiency = CalculateTurbineEfficiency(sliderEfficiency, maxTurbineEfficiency, CurrentWindSpeed);
             float outputPower = availableWindPower * turbineEfficiency;
 
             turbine.ValueText.text = $"{turbineEfficiency * 100f:0}%  {outputPower / 1000f:0.0} kW";
@@ -331,6 +332,16 @@ public class WindradDashboard : MonoBehaviour
         }
 
         return Mathf.InverseLerp(slider.minValue, slider.maxValue, slider.value);
+    }
+
+    public static float CalculateTurbineEfficiency(float sliderEfficiency, float maxEfficiency, float windSpeed)
+    {
+        if (windSpeed <= StoppedWindThreshold)
+        {
+            return 0f;
+        }
+
+        return Mathf.Clamp01(sliderEfficiency) * maxEfficiency;
     }
 
     private static string FindWindmillName(Transform source)

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class WindSimulationController : MonoBehaviour
 {
+    private const float StoppedWindThreshold = 0.001f;
+
     [Header("Wind Settings")]
     [SerializeField] private float maxWindSpeed = 30f;
     [SerializeField] private float startWindSpeed = 8f;
@@ -110,8 +112,7 @@ public class WindSimulationController : MonoBehaviour
         }
 
         Slider sourceSlider = windSliders[0];
-        float normalizedValue = Mathf.InverseLerp(sourceSlider.minValue, sourceSlider.maxValue, sliderValue);
-        SetWindSpeed(normalizedValue * maxWindSpeed);
+        SetWindSpeed(CalculateWindSpeedFromSlider(sourceSlider.minValue, sourceSlider.maxValue, sliderValue, maxWindSpeed));
     }
 
     private void UpdateWindFromSlider()
@@ -162,12 +163,12 @@ public class WindSimulationController : MonoBehaviour
     private void RotateWindmills()
     {
         float normalizedWind = Mathf.InverseLerp(0f, maxWindSpeed, CurrentWindSpeed);
-        if (normalizedWind <= 0.001f)
+        if (!ShouldAnimateAtWindSpeed(CurrentWindSpeed))
         {
             return;
         }
 
-        float degreesThisFrame = normalizedWind * maxRotorDegreesPerSecond * Time.deltaTime;
+        float degreesThisFrame = CalculateRotorStep(normalizedWind, maxRotorDegreesPerSecond, Time.deltaTime);
         foreach (Transform rotor in rotors)
         {
             if (rotor != null)
@@ -180,6 +181,32 @@ public class WindSimulationController : MonoBehaviour
     public void SetWindSpeed(float windSpeed)
     {
         CurrentWindSpeed = Mathf.Clamp(windSpeed, 0f, maxWindSpeed);
+    }
+
+    public static bool ShouldAnimateAtWindSpeed(float windSpeed)
+    {
+        return windSpeed > StoppedWindThreshold;
+    }
+
+    public static float CalculateWindSpeedFromSlider(float sliderMin, float sliderMax, float sliderValue, float maxWindSpeed)
+    {
+        if (Mathf.Approximately(sliderMin, sliderMax))
+        {
+            return 0f;
+        }
+
+        float normalizedValue = Mathf.InverseLerp(sliderMin, sliderMax, sliderValue);
+        return Mathf.Clamp01(normalizedValue) * maxWindSpeed;
+    }
+
+    public static float CalculateRotorStep(float normalizedWind, float maxDegreesPerSecond, float deltaTime)
+    {
+        if (normalizedWind <= StoppedWindThreshold)
+        {
+            return 0f;
+        }
+
+        return Mathf.Clamp01(normalizedWind) * maxDegreesPerSecond * deltaTime;
     }
 
 }
