@@ -21,6 +21,7 @@ public class WindSimulationController : MonoBehaviour
     public static WindSimulationController Instance { get; private set; }
     public float CurrentWindSpeed { get; private set; }
     public float CurrentWindSpeedKmh => CurrentWindSpeed * 3.6f;
+    public float CurrentRotorRpm => CalculateRotorRpm(Mathf.InverseLerp(0f, maxWindSpeed, CurrentWindSpeed), maxRotorDegreesPerSecond);
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneBootstrap()
@@ -207,6 +208,17 @@ public class WindSimulationController : MonoBehaviour
         }
 
         return Mathf.Clamp01(normalizedWind) * maxDegreesPerSecond * deltaTime;
+    }
+
+    public static float CalculateRotorRpm(float normalizedWind, float maxDegreesPerSecond)
+    {
+        if (normalizedWind <= StoppedWindThreshold)
+        {
+            return 0f;
+        }
+
+        float degreesPerSecond = Mathf.Clamp01(normalizedWind) * maxDegreesPerSecond;
+        return degreesPerSecond / 360f * 60f;
     }
 
 }
