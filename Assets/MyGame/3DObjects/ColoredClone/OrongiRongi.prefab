@@ -18,11 +18,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: b34df43c2b1272546b52709c20cdfbed, type: 2}
     - target: {fileID: -8679921383154817045, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.45
+      value: -1281.45
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -720
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -38,7 +38,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.97693175
+      value: -0.9769318
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
       propertyPath: m_LocalRotation.z
@@ -111,5 +111,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3699796541229810064}
   m_SourcePrefab: {fileID: 100100000, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
+--- !u!1 &1931224103552067406 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 24e5b4141c74ca84cb95cd2fc77cb98d, type: 3}
+  m_PrefabInstance: {fileID: 1588785261060921887}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3699796541229810064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931224103552067406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72cfdedf139a75f439077ebe1f0a3813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 100
+  rotateAroundX: 1
+  rotateAroundY: 1
+  rotateAroundZ: 0
